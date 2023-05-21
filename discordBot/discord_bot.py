@@ -194,4 +194,4 @@ async def on_message(message):
         except Exception as e:
             await message.channel.send(f"An error occurred: {str(e)}")
 
-client.run("MTEwNzg0MTA0OTg4OTYwMzY0NQ.GKoGyl.WIZHmEb3qB9rSoPFIb8lB7AbWnr-S__NKYEa0U")
+client.run("bot_token")

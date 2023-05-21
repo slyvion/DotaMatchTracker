@@ -177,7 +177,7 @@ async def on_message(message):
                             start_time = match['start_time']
 
                             hero_name = hero_mapping.get(hero_id, f"Hero ID {hero_id}")
-                            date_played = datetime.utcfromtimestamp(start_time).strftime('%Y-%m-%d %H:%M:%S')
+                            date_played = datetime.utcfromtimestamp(start_time).strftime('%d-%m-%Y %H:%M:%S')
 
                             match_details.append(f"Match ID: {match_id} | Hero: {hero_name} | Match Result: {'Win' if win else 'Loss'} | KDA: {kda} | Date: {date_played}")
 

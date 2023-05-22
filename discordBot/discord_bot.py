@@ -177,9 +177,9 @@ async def on_message(message):
                             start_time = match['start_time']
 
                             hero_name = hero_mapping.get(hero_id, f"Hero ID {hero_id}")
-                            date_played = datetime.utcfromtimestamp(start_time).strftime('%d-%m-%Y %H:%M:%S')
+                            date_played = datetime.utcfromtimestamp(start_time).strftime('%Y-%m-%d %H:%M:%S')
 
-                            match_details.append(f"Match ID: {match_id} | Hero: {hero_name} | Match Result: {'Win' if win else 'Loss'} | KDA: {kda} | Date: {date_played}")
+                            match_details.append(f"Match ID: {match_id} | Hero: {hero_name} | Win: {'Win' if win else 'Loss'} | KDA: {kda} | Date: {date_played}")
 
                         response_message = f"Latest 5 matches for player {player_name} (ID: {player_id}):\n"
                         response_message += '\n'.join(match_details)
@@ -193,5 +193,123 @@ async def on_message(message):
                 await message.channel.send(f"Player '{player_name}' not found in player mapping.")
         except Exception as e:
             await message.channel.send(f"An error occurred: {str(e)}")
+
+    elif message.content.startswith('!rank'):
+        try:
+            player_name = message.content.split()[1].lower()
+            player_id = player_mapping.get(player_name)
+            if player_id:
+                url = f"https://api.opendota.com/api/players/{player_id}"
+                response = requests.get(url)
+                if response.status_code == 200:
+                    data = response.json()
+
+                    rank_tier = data.get("rank_tier")
+                    if rank_tier:
+                        tier = rank_tier // 10
+                        tier_name = "Unknown"
+                        if tier == 1:
+                            tier_name = "Herald"
+                        elif tier == 2:
+                            tier_name = "Guardian"
+                        elif tier == 3:
+                            tier_name = "Crusader"
+                        elif tier == 4:
+                            tier_name = "Archon"
+                        elif tier == 5:
+                            tier_name = "Legend"
+                        elif tier == 6:
+                            tier_name = "Ancient"
+                        elif tier == 7:
+                            tier_name = "Divine"
+                        elif tier == 8:
+                            tier_name = "Immortal"
+
+                        response_message = f"{player_name}'s rank is {tier_name}"
+                    else:
+                        response_message = f"No rank information found for player {player_name} (ID: {player_id})."
+
+                    await message.channel.send(response_message)
+                else:
+                    await message.channel.send("Failed to fetch rank information.")
+            else:
+                await message.channel.send(f"Player '{player_name}' not found in player mapping.")
+        except Exception as e:
+            await message.channel.send(f"An error occurred: {str(e)}")
+
+    elif message.content.startswith('!mostplayed'):
+        await message.channel.send("not fixed jbg...")
+
+    elif message.content.startswith('!winrate'):
+        try:
+            player_name = message.content.split()[1].lower()
+            player_id = player_mapping.get(player_name)
+            if player_id:
+                url = f"https://api.opendota.com/api/players/{player_id}/wl"
+                response = requests.get(url)
+                if response.status_code == 200:
+                    data = response.json()
+
+                    win = data.get('win')
+                    lose = data.get('lose')
+
+                    if win is not None and lose is not None:
+                        total_matches = win + lose
+                        win_rate = (win / total_matches) * 100
+
+                        response_message = f"{player_name} has a Win Rate of {win_rate:.2f}% with {total_matches} games played."
+                    else:
+                        response_message = f"No win/loss data found for player {player_name} (ID: {player_id})."
+
+                    await message.channel.send(response_message)
+                else:
+                    await message.channel.send("Failed to fetch win/loss data.")
+            else:
+                await message.channel.send(f"Player '{player_name}' not found in player mapping.")
+        except Exception as e:
+            await message.channel.send(f"An error occurred: {str(e)}")
+
+    elif message.content.startswith('!id'):
+        try:
+            player_name = message.content.split()[1].lower()
+            player_id = player_mapping.get(player_name)
+            if player_id:
+                response_message = f"{player_name}'s SteamID is {player_id}."
+            else:
+                response_message = f"Player '{player_name}' not found in player mapping."
+            await message.channel.send(response_message)
+        except Exception as e:
+            await message.channel.send(f"An error occurred: {str(e)}")
+
+    elif message.content.startswith('!dotabuff'):
+        try:
+            player_name = message.content.split()[1].lower()
+            player_id = player_mapping.get(player_name)
+            if player_id:
+                response_message = f"{player_name}'s dotabuff profile is : https://www.dotabuff.com/players/{player_id}"
+            else:
+                response_message = f"Player '{player_name}' not found in player mapping."
+            await message.channel.send(response_message)
+        except Exception as e:
+            await message.channel.send(f"An error occurred: {str(e)}")
+
+    elif message.content.startswith('!opendota'):
+        try:
+            player_name = message.content.split()[1].lower()
+            player_id = player_mapping.get(player_name)
+            if player_id:
+                response_message = f"{player_name}'s dotabuff profile is : https://www.opendota.com/players/{player_id}"
+            else:
+                response_message = f"Player '{player_name}' not found in player mapping."
+            await message.channel.send(response_message)
+        except Exception as e:
+            await message.channel.send(f"An error occurred: {str(e)}")
+
+    elif message.content.startswith('!komandi'):
+        await message.channel.send("!recent_matches ime //za posledni 5 igri")
+        await message.channel.send("!rank ime // za rank")
+        await message.channel.send("!winrate ime // za winrate")
+        await message.channel.send("!id ime // za id")
+        await message.channel.send("!dotabuff/opendota ime // za dotabuff/opendota link")
 
 client.run("bot_token")

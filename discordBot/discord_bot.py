@@ -7,6 +7,17 @@ intents.message_content = True
 
 client = discord.Client(intents=intents)
 
+rank_mapping = {
+    1: "Herald",
+    2: "Guardian",
+    3: "Crusader",
+    4: "Archon",
+    5: "Legend",
+    6: "Ancient",
+    7: "Divine",
+    8: "Immortal"
+}
+
 hero_mapping = {
     1: "Anti-Mage",
     2: "Axe",
@@ -207,25 +218,10 @@ async def on_message(message):
                     rank_tier = data.get("rank_tier")
                     if rank_tier:
                         tier = rank_tier // 10
-                        tier_name = "Unknown"
-                        if tier == 1:
-                            tier_name = "Herald"
-                        elif tier == 2:
-                            tier_name = "Guardian"
-                        elif tier == 3:
-                            tier_name = "Crusader"
-                        elif tier == 4:
-                            tier_name = "Archon"
-                        elif tier == 5:
-                            tier_name = "Legend"
-                        elif tier == 6:
-                            tier_name = "Ancient"
-                        elif tier == 7:
-                            tier_name = "Divine"
-                        elif tier == 8:
-                            tier_name = "Immortal"
+                        numerical_rank = rank_tier % 10
+                        tier_name = rank_mapping.get(tier, "Unknown")
 
-                        response_message = f"{player_name}'s rank is {tier_name}"
+                        response_message = f"{player_name}'s rank is {tier_name} {numerical_rank}"
                     else:
                         response_message = f"No rank information found for player {player_name} (ID: {player_id})."
 
